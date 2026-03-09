@@ -1,0 +1,122 @@
+package aha.common.util;
+
+import static aha.common.guard.ObjectGuards.throwStaticClassInstantiateError;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+
+/**
+ * <p>
+ *   Utility methods of use when working with
+ *   {@link Instant}s.
+ * </p>
+ */
+public final class Instants {
+	private Instants() { throwStaticClassInstantiateError(); }
+	
+	/**
+	 * <p>
+	 *   Gets a
+	 *   {@link String} that can be used as a file name that communicate the
+	 *   given time.
+	 * </p>
+	 * @param instant the time.
+	 * @return File name safe
+	 *         {@link String} based on {@code }.
+	 * @see #fromFileSafeString(String)
+	 */
+	public final static String toFileSafeString(Instant t) {
+		return FORMATTER.format(t); }
+
+	/**
+	 * <p>
+	 *   Gets the time encoded in a
+	 *   {@link String} produced by
+	 *   {@link #toFileSafeString(Instant)}.
+	 * </p>
+	 * @param input {@link String} to get time from.
+	 * @return Time.
+	 * @see #toFileSafeString(Instant)
+	 */
+    public final static Instant fromFileSafeString(String input) {
+    	return Instant.from(PARSER.parse(input)); }
+	
+    // Note: ':' replaced with '-' for filesystem safety
+	private final static DateTimeFormatter FORMATTER =
+		DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH-mm-ss.SSSX").
+			withZone(ZoneOffset.UTC);
+
+	private final static DateTimeFormatter PARSER =
+		DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH-mm-ss.SSSX").
+			withZone(ZoneOffset.UTC);
+	    
+	/**
+	 * <p>
+	 *   Gets the
+	 *   {@link Interval} a
+	 *   {@link String} in the ISO date (day) represents.
+	 * </p>
+	 * @param isoDate Date
+	 *                {@link String}.
+	 * @return the {@link Interval} of the day.
+	 */
+	public final static Interval dayInterval(String isoDate) {
+        var date = LocalDate.parse(isoDate); // parse "YYYY-MM-DD"
+        var from = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+        var to   = from.plus(1, ChronoUnit.DAYS);
+        return new Interval(from, to);
+    }
+	
+	private final static DateTimeFormatter ISO_DATE =
+		DateTimeFormatter.ISO_LOCAL_DATE;
+	
+	/**
+	 * <p>
+	 *   Tells if a
+	 *   {@link String} represents an ISO date or not.
+	 * </p>
+	 * @param s the {@link String} to test.
+	 * @return {@code true} if is else {@code false}.
+	 */
+	public final static boolean isIsoDate(String s) {
+        if (s == null) return false;
+        try {
+            LocalDate.parse(s, ISO_DATE);
+            return true;
+        } catch (DateTimeParseException ex) { return false; }
+    }
+    
+    /**
+     * <p>
+     *   Gets current date in ISO (yyyy-MM-dd), UTC.
+     * </p>
+     * @return Date string as specified.
+     */
+    public final static String todayIsoUtc() {
+        return LocalDate.now(ZoneOffset.UTC).toString(); }
+     
+    /**
+     * <p>
+     *   Gets current time in ISO (yyyy-MM-dd'T'HH:mm:ss'Z'), UTC 
+     * </p>
+     * @return ISO time.
+     */
+    public final static String nowIsoUtcDateTime() { 
+    	return Instant.now().toString(); }
+    
+    /**
+     * <p>
+     *   Represents an interval.
+     * </p>
+     */
+    public record Interval(Instant from, Instant to) {
+    	@Override public final String toString() { 
+    		return "" + (from==null?"(-∞)":from) + " → " + 
+    			(to==null?"(+∞)":to); }
+    }
+    
+}
