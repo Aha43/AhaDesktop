@@ -1,19 +1,13 @@
 package aha.common.util;
 
-import java.util.List;
-
 import static aha.common.guard.ObjectGuards.throwStaticClassInstantiateError;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
-
-import astrogeist.engine.typesystem.Type;
 
 // TODO: Break astrogeist dependency (Type system).
 
@@ -57,20 +51,6 @@ public final class FilesUtil {
 	
 	public final static List<Path> filesToPaths(List<File> paths) { 
 		return paths.stream().map(File::toPath).toList(); }
-	
-	public final static Map<Type.DiskFile, List<File>> groupByExtension(
-		List<File> files) {
-        
-		Map<Type.DiskFile, List<File>> grouped = new LinkedHashMap<>();
-
-        for (var file : files) {
-            if (!file.isFile()) continue;
-            var type = Type.DiskFile().resolve(file);
-            grouped.computeIfAbsent(type, k -> new ArrayList<>()).add(file);
-        }
-
-        return grouped;
-    }
 	
 	public final static List<Path> getRegularFilePaths(Path dir)
 		throws IOException {

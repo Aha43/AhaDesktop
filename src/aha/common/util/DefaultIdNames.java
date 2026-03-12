@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import aha.common.abstraction.IdNames;
+import aha.common.util.abstraction.IdNames;
 
 /**
  * <p>
@@ -18,8 +18,8 @@ import aha.common.abstraction.IdNames;
  * </p>
  * <p>
  *   - Stores id-to-name mappings in a {@link HashMap}.<br>
- *   - {@link #label(String)} never fails due to missing mappings and returns a visibly
- *     "unmapped" label so issues stand out during development.
+ *   - {@link #label(String)} never fails due to missing mappings and returns a 
+ *     visibly "unmapped" label so issues stand out during development.
  * </p>
  * <p>
  *   Thread-safety: not thread-safe.
